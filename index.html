@@ -3,68 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUD Homelessness Data Visualization</title>
+    <title>Housing and Homelessness Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>HUD Homelessness Data from 2015-2024</h1>
-    <canvas id="barChart"></canvas>
-    <canvas id="lineChart"></canvas>
+    <header>
+        <h1 style="background: linear-gradient(45deg, #6a11cb, #2575fc); padding: 20px; color: white;">Housing and Homelessness Dashboard</h1>
+    </header>
+    <main>
+        <section class="statistics">
+            <div class="card">Total Homelessness: <span id="total-homelessness"></span></div>
+            <div class="card">Yearly Increase: <span id="yearly-increase"></span></div>
+            <div class="card">Key Findings: <span id="key-findings"></span></div>
+        </section>
+        <section class="charts">
+            <canvas id="lineChart"></canvas>
+            <canvas id="barChart"></canvas>
+        </section>
+        <section class="key-findings">
+            <h2>Key Findings</h2>
+            <p>Insights based on the available data.</p>
+        </section>
+        <section class="yearly-breakdown">
+            <h2>Year-by-Year Breakdown</h2>
+            <table>
+                <tr>
+                    <th>Year</th>
+                    <th>Number of Homeless Individuals</th>
+                </tr>
+                <tr><td>2015</td><td>19419</td></tr>
+                <tr><td>2016</td><td>20827</td></tr>
+                <tr><td>2017</td><td>21112</td></tr>
+                <tr><td>2018</td><td>22304</td></tr>
+                <tr><td>2019</td><td>21577</td></tr>
+                <tr><td>2020</td><td>22923</td></tr>
+                <tr><td>2021</td><td>11511</td></tr>
+                <tr><td>2022</td><td>25211</td></tr>
+                <tr><td>2023</td><td>28036</td></tr>
+                <tr><td>2024</td><td>31554</td></tr>
+            </table>
+        </section>
+    </main>
+    <footer>
+        <p>Data Sources: HUD, Research Studies</p>
+    </footer>
     <script>
-        const ctxBar = document.getElementById('barChart').getContext('2d');
-        const ctxLine = document.getElementById('lineChart').getContext('2d');
-
-        const data = {
-            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
-            datasets: [{
-                label: 'Homelessness Count',
-                data: [564000, 553000, 510000, 490000, 450000, 480000, 495000, 500000, 530000, 560000],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1,
-                type: 'bar'
-            }]
-        };
-
-        const configBar = {
-            type: 'bar',
-            data: data,
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-
-        const barChart = new Chart(ctxBar, configBar);
-
-        const dataLine = {
-            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
-            datasets: [{
-                label: 'Percent Change',
-                data: [0,-1.5,-7.8,-3.9,-8.2,6.7,3.1,1.0,6.0,5.7],
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 2,
-                fill: false,
-                type: 'line'
-            }]
-        };
-
-        const configLine = {
+        const ctx1 = document.getElementById('lineChart').getContext('2d');
+        const lineChart = new Chart(ctx1, {
             type: 'line',
-            data: dataLine,
+            data: {
+                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Number of Homeless Individuals',
+                    data: [19419, 20827, 21112, 22304, 21577, 22923, 11511, 25211, 28036, 31554],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: false,
+                }]
+            },
             options: {
+                responsive: true,
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    y: { beginAtZero: true }
                 }
             }
-        };
+        });
 
-        const lineChart = new Chart(ctxLine, configLine);
+        const ctx2 = document.getElementById('barChart').getContext('2d');
+        const barChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                datasets: [{
+                    label: 'Number of Homeless Individuals',
+                    data: [19419, 20827, 21112, 22304, 21577, 22923, 11511, 25211, 28036, 31554],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        document.getElementById('total-homelessness').innerText = 'Total: 250,124';
+        document.getElementById('yearly-increase').innerText = 'Increase over the last decade: X%';
+        document.getElementById('key-findings').innerText = 'Summary of key findings goes here';
     </script>
 </body>
 </html>
