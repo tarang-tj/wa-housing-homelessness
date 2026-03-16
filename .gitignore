@@ -1,0 +1,24 @@
+# R project ignores
+
+# R data files
+.RData
+.Rhistory
+
+# R profile
+.Rproj.user/
+
+# R Markdown
+*.utf8.md
+*.Rmd
+
+# knitr generated files
+*.html
+*.pdf
+
+# RStudio files
+.Rproj
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
