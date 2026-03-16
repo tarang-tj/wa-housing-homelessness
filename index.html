@@ -3,38 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Housing & Homelessness Project</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        header { background-color: #4CAF50; color: white; padding: 10px 0; text-align: center; }
-        section { padding: 20px; }
-        h1 { color: #333; }
-        a { color: #4CAF50; }
-    </style>
+    <title>HUD Homelessness Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to the Housing & Homelessness Project</h1>
-    </header>
-    <section>
-        <h2>Features</h2>
-        <ul>
-            <li>Comprehensive resources for housing assistance</li>
-            <li>Information about local shelters and food programs</li>
-            <li>Guidance for getting involved with community efforts</li>
-        </ul>
-        <h2>Getting Started</h2>
-        <p>To get started, check out our project documentation and resources on how to contribute:</p>
-        <ol>
-            <li>Clone the repository: <code>git clone https://github.com/tarang-tj/wa-housing-homelessness.git</code></li>
-            <li>Visit the project documentation on GitHub Pages.</li>
-        </ol>
-        <h2>Useful Links</h2>
-        <ul>
-            <li><a href="https://www.hud.gov/">U.S. Department of Housing and Urban Development</a></li>
-            <li><a href="https://www.nationalhomeless.org/">National Coalition for the Homeless</a></li>
-            <li><a href="https://www.homelessshelterdirectory.org/">Homeless Shelter Directory</a></li>
-        </ul>
-    </section>
+    <h1>HUD Homelessness Data from 2015-2024</h1>
+    <canvas id="barChart"></canvas>
+    <canvas id="lineChart"></canvas>
+    <script>
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+
+        const data = {
+            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'Homelessness Count',
+                data: [564000, 553000, 510000, 490000, 450000, 480000, 495000, 500000, 530000, 560000],
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                type: 'bar'
+            }]
+        };
+
+        const configBar = {
+            type: 'bar',
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const barChart = new Chart(ctxBar, configBar);
+
+        const dataLine = {
+            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'Percent Change',
+                data: [0,-1.5,-7.8,-3.9,-8.2,6.7,3.1,1.0,6.0,5.7],
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false,
+                type: 'line'
+            }]
+        };
+
+        const configLine = {
+            type: 'line',
+            data: dataLine,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const lineChart = new Chart(ctxLine, configLine);
+    </script>
 </body>
 </html>
