@@ -30,7 +30,7 @@ install.packages(c("dplyr", "ggplot2", "tidyr"))
 Contributions to improve this analysis and project are welcome! Please open issues or submit pull requests for further enhancements.
 
 ## Contact
-For any inquiries, please contact **[Your Name]** at **[Your Email]**.
+For any inquiries, please contact **Tarang Jammalamadaka** at **tarangjammalamadaka9@gmail.com**.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
