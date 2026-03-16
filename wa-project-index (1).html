@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WA Rent & Homelessness Analysis — TJ Jammalamadaka</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --paper: #f5f2ec;
+    --accent: #c84b2f;
+    --accent2: #1a4a6b;
+    --muted: #7a7269;
+    --rule: #d8d3c8;
+    --card: #efeae0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 3rem;
+    background: rgba(245,242,236,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .nav-back {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    padding: 8rem 3rem 5rem;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: end;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3.8rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.35s;
+  }
+
+  .hero-title em { font-style: italic; color: var(--accent); }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 480px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.5s;
+  }
+
+  .hero-meta {
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.55s;
+  }
+
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .meta-item { }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  .meta-value {
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+
+  .hero-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn-filled { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-filled:hover { background: #a83a20; border-color: #a83a20; color: white; }
+
+  /* STATS BAND */
+  .stats-band {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .stat-cell {
+    padding: 2.5rem 3rem;
+    border-right: 1px solid var(--rule);
+  }
+  .stat-cell:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .stat-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* SECTION */
+  .section {
+    padding: 5rem 3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* CHARTS */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--rule);
+    margin-bottom: 2rem;
+  }
+
+  .chart-box {
+    padding: 2.5rem;
+    border-right: 1px solid var(--rule);
+  }
+  .chart-box:last-child { border-right: none; }
+  .chart-box:nth-child(3) { border-top: 1px solid var(--rule); }
+  .chart-box:nth-child(4) { border-top: 1px solid var(--rule); border-right: none; }
+
+  .chart-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .chart-subtitle {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .chart-full {
+    border: 1px solid var(--rule);
+    padding: 2.5rem;
+  }
+
+  /* FINDINGS */
+  .findings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+  }
+
+  .finding-card {
+    padding: 2.25rem;
+    border-right: 1px solid var(--rule);
+  }
+  .finding-card:last-child { border-right: none; }
+
+  .finding-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+
+  .finding-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+
+  .finding-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* METHODOLOGY */
+  .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .method-block h3 {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .method-block p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+  }
+
+  .source-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .source-list li {
+    font-size: 0.83rem;
+    color: var(--muted);
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .source-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+
+  .source-list a {
+    color: var(--accent2);
+    text-decoration: none;
+  }
+  .source-list a:hover { text-decoration: underline; }
+
+  footer {
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--rule);
+  }
+
+  footer span {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  footer a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; gap: 2rem; }
+    .stats-band { grid-template-columns: 1fr 1fr; }
+    .stat-cell:nth-child(2) { border-right: none; }
+    .stat-cell:nth-child(3) { border-top: 1px solid var(--rule); }
+    .stat-cell:nth-child(4) { border-top: 1px solid var(--rule); border-right: none; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-box { border-right: none; border-bottom: 1px solid var(--rule); }
+    .findings-grid { grid-template-columns: 1fr; }
+    .finding-card { border-right: none; border-bottom: 1px solid var(--rule); }
+    .method-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .section { padding: 3rem 1.5rem; }
+    footer { flex-direction: column; gap: 0.5rem; padding: 1.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="https://tarang-tj.github.io" class="nav-logo">← TJ_</a>
+  <a href="https://github.com/tarang-tj/wa-housing-homelessness" target="_blank" class="nav-back">View on GitHub ↗</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <p class="hero-tag">Data Analysis Project · University of Washington Bothell</p>
+    <h1 class="hero-title">Rising Rent &<br><em>Homelessness</em><br>in Washington</h1>
+    <p class="hero-desc">An analysis of the relationship between housing costs and homelessness across Washington State from 2015 to 2024, using Zillow ZORI data and HUD Point-in-Time counts.</p>
+    <div class="hero-links">
+      <a href="https://github.com/tarang-tj/wa-housing-homelessness" target="_blank" class="btn btn-filled">View Code on GitHub</a>
+      <a href="https://github.com/tarang-tj/wa-housing-homelessness/blob/main/data/hud_pit_wa_2015_2024.csv" target="_blank" class="btn">View Data</a>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="meta-label">Authors</div>
+        <div class="meta-value">Alisa Seng Chea, Duke Sarankhuu,<br>Tarang (TJ) Jammalamadaka</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Tools Used</div>
+        <div class="meta-value">R · ggplot2 · Tableau · Excel</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Data Sources</div>
+        <div class="meta-value">Zillow Research (ZORI) · HUD PIT Count</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Time Period</div>
+        <div class="meta-value">2015 – 2024 (10 years)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS BAND -->
+<div class="stats-band reveal">
+  <div class="stat-cell">
+    <div class="stat-num">+63%</div>
+    <div class="stat-desc">Rent increase<br>2015 → 2024</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">+62%</div>
+    <div class="stat-desc">Homelessness increase<br>2015 → 2024</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">r=0.78</div>
+    <div class="stat-desc">Correlation coefficient<br>all years</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num">2021</div>
+    <div class="stat-desc">Key outlier — COVID<br>eviction moratorium</div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="section">
+  <div class="section-header reveal">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Data Visualizations</h2>
+  </div>
+
+  <div class="charts-grid reveal">
+    <div class="chart-box">
+      <div class="chart-title">Average Monthly Rent</div>
+      <div class="chart-subtitle">Washington State metros · Zillow ZORI · 2015–2024</div>
+      <canvas id="rentChart" height="220"></canvas>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">Total Homelessness</div>
+      <div class="chart-subtitle">Point-in-Time count · HUD · 2015–2024</div>
+      <canvas id="homelessChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-full reveal">
+    <div class="chart-title">Rent vs. Homelessness — Key Relationship</div>
+    <div class="chart-subtitle">Each point = one year · Upward trend shows positive association · 2021 is the COVID outlier</div>
+    <canvas id="scatterChart" height="120"></canvas>
+  </div>
+</div>
+
+<!-- KEY FINDINGS -->
+<div class="section">
+  <div class="section-header reveal">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Key Findings</h2>
+  </div>
+  <div class="findings-grid reveal">
+    <div class="finding-card">
+      <div class="finding-num">~60%</div>
+      <div class="finding-title">Parallel Growth</div>
+      <div class="finding-desc">Both rent and homelessness increased by roughly 60% between 2015 and 2024, suggesting a strong positive association between housing costs and housing instability.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">2024</div>
+      <div class="finding-title">All-Time Highs</div>
+      <div class="finding-desc">Both metrics reached their highest recorded levels in 2024 — average rent at $1,650/mo and 31,554 homeless individuals — indicating that affordability pressures have continued to intensify.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">2021</div>
+      <div class="finding-title">COVID Outlier</div>
+      <div class="finding-desc">Homelessness dropped sharply to 11,511 in 2021 despite rising rent — attributable to COVID-19 eviction moratoriums and federal emergency rental assistance programs protecting tenants.</div>
+    </div>
+  </div>
+</div>
+
+<!-- METHODOLOGY -->
+<div class="section">
+  <div class="section-header reveal">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Methodology & Sources</h2>
+  </div>
+  <div class="method-grid reveal">
+    <div class="method-block">
+      <h3>Approach</h3>
+      <p>Monthly ZORI values for all Washington State metros were extracted and averaged by year to produce a single statewide annual rent figure. HUD Point-in-Time counts — a single-night census conducted each January — were used as the homelessness measure.</p>
+      <p>R was used for data cleaning, reshaping (pivot_longer), and ggplot2 visualization. A Pearson correlation was computed between annual average rent and annual homeless count. The 2021 outlier was identified and analyzed separately given the extraordinary policy context.</p>
+      <p><strong>Causation caveat:</strong> This analysis identifies a correlation, not causation. Homelessness is driven by multiple factors. Rising rent is one contributing pressure among many.</p>
+    </div>
+    <div class="method-block">
+      <h3>Data Sources</h3>
+      <ul class="source-list">
+        <li><strong>Zillow Observed Rent Index (ZORI)</strong> — Smoothed, all homes plus multifamily. <a href="https://www.zillow.com/research/data/" target="_blank">zillow.com/research/data</a></li>
+        <li><strong>HUD Point-in-Time Estimates by State, 2007–2024</strong> — U.S. Dept. of Housing and Urban Development. <a href="https://www.hudexchange.info/resource/3031/pit-and-hic-data-since-2007/" target="_blank">hudexchange.info</a></li>
+        <li><strong>COVID-19 Policy Context</strong> — Rental Housing Association of Washington. <a href="https://www.rhawa.org/covid-19" target="_blank">rhawa.org/covid-19</a></li>
+        <li><strong>Emergency Rental Assistance</strong> — U.S. Dept. of the Treasury. <a href="https://home.treasury.gov/policy-issues/coronavirus/assistance-for-state-local-and-tribal-governments/emergency-rental-assistance-program" target="_blank">treasury.gov</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>© 2026 Tarang (TJ) Jammalamadaka · UW Bothell</span>
+  <a href="https://tarang-tj.github.io">← Back to Portfolio</a>
+</footer>
+
+<script>
+  // REAL DATA from the project
+  const years = ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+  const rentData = [1011, 1084, 1171, 1257, 1322, 1391, 1545, 1539, 1590, 1650];
+  const homelessData = [19419, 20827, 21112, 22304, 21577, 22923, 11511, 25211, 28036, 31554];
+
+  const ACCENT = '#c84b2f';
+  const ACCENT2 = '#1a4a6b';
+  const MUTED = '#7a7269';
+  const RULE = '#d8d3c8';
+
+  const baseOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0f0f0f',
+        titleFont: { family: 'DM Mono', size: 11 },
+        bodyFont: { family: 'DM Sans', size: 12 },
+        padding: 10,
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: RULE },
+        ticks: { font: { family: 'DM Mono', size: 10 }, color: MUTED }
+      },
+      y: {
+        grid: { color: RULE },
+        ticks: { font: { family: 'DM Mono', size: 10 }, color: MUTED }
+      }
+    }
+  };
+
+  // Chart 1 — Rent
+  new Chart(document.getElementById('rentChart'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [{
+        data: rentData,
+        backgroundColor: years.map(y => y === '2024' ? ACCENT : 'rgba(26,74,107,0.7)'),
+        borderRadius: 2,
+      }]
+    },
+    options: {
+      ...baseOptions,
+      plugins: { ...baseOptions.plugins },
+      scales: {
+        ...baseOptions.scales,
+        y: {
+          ...baseOptions.scales.y,
+          ticks: {
+            ...baseOptions.scales.y.ticks,
+            callback: v => '$' + v.toLocaleString()
+          }
+        }
+      }
+    }
+  });
+
+  // Chart 2 — Homelessness
+  new Chart(document.getElementById('homelessChart'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [{
+        data: homelessData,
+        backgroundColor: years.map(y => y === '2021' ? 'rgba(200,75,47,0.4)' : y === '2024' ? ACCENT : 'rgba(200,75,47,0.7)'),
+        borderRadius: 2,
+      }]
+    },
+    options: {
+      ...baseOptions,
+      scales: {
+        ...baseOptions.scales,
+        y: {
+          ...baseOptions.scales.y,
+          ticks: {
+            ...baseOptions.scales.y.ticks,
+            callback: v => v.toLocaleString()
+          }
+        }
+      }
+    }
+  });
+
+  // Chart 3 — Scatter
+  const scatterData = years.map((y, i) => ({
+    x: rentData[i],
+    y: homelessData[i],
+    year: y
+  }));
+
+  new Chart(document.getElementById('scatterChart'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: scatterData,
+        backgroundColor: years.map(y =>
+          y === '2021' ? 'rgba(200,75,47,0.4)' : y === '2024' ? ACCENT : ACCENT2
+        ),
+        pointRadius: 8,
+        pointHoverRadius: 10,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f0f0f',
+          titleFont: { family: 'DM Mono', size: 11 },
+          bodyFont: { family: 'DM Sans', size: 12 },
+          padding: 10,
+          callbacks: {
+            label: ctx => {
+              const d = ctx.raw;
+              return [`Year: ${d.year}`, `Rent: $${d.x.toLocaleString()}`, `Homeless: ${d.y.toLocaleString()}`];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: RULE },
+          ticks: {
+            font: { family: 'DM Mono', size: 10 },
+            color: MUTED,
+            callback: v => '$' + v.toLocaleString()
+          },
+          title: {
+            display: true,
+            text: 'Average Monthly Rent ($)',
+            font: { family: 'DM Mono', size: 10 },
+            color: MUTED
+          }
+        },
+        y: {
+          grid: { color: RULE },
+          ticks: {
+            font: { family: 'DM Mono', size: 10 },
+            color: MUTED,
+            callback: v => v.toLocaleString()
+          },
+          title: {
+            display: true,
+            text: 'Total Homeless Individuals',
+            font: { family: 'DM Mono', size: 10 },
+            color: MUTED
+          }
+        }
+      }
+    }
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
