@@ -1,36 +1,48 @@
-# R Analysis Project on Washington State Housing and Homelessness
+# WA Rent & Homelessness Analysis
 
-## Overview
-This project conducts a comprehensive analysis of housing and homelessness in Washington State using R programming. The goal is to explore the factors influencing housing stability, analyze trends in homelessness, and provide actionable insights for policymakers and stakeholders.
+An R analysis of how rising rents track with homelessness in Washington State from 2015 to 2024, using Zillow rent data and HUD point-in-time counts.
 
-## Key Features
-- **Data Collection**: Gather data from various sources, including government reports, surveys, and datasets available from public repositories.
-- **Data Cleaning**: Use R libraries like `dplyr` and `tidyr` to preprocess and clean the data for analysis.
-- **Statistical Analysis**: Conduct various statistical tests and analysis to understand the relationships between socioeconomic factors and housing stability.
-- **Visualization**: Create informative visualizations using `ggplot2` to depict trends and key findings effectively.
+Interactive report (charts): https://tarang-tj.github.io/wa-housing-homelessness/
 
-## Project Structure
-- `data/`: Contains raw and processed data files.
-- `scripts/`: R scripts for data analysis
-- `figures/`: Plots and figures generated from the analysis.
-- `results/`: Analysis results and summaries.
+## Question
 
-## Installation
-To run this project locally, ensure you have R installed along with the necessary libraries. You can install the required packages using:
-```R
-install.packages(c("dplyr", "ggplot2", "tidyr"))
+Do statewide rent increases move together with homelessness counts in Washington? The report pairs annual average rent with the annual homeless count, computes a Pearson correlation, and treats the 2021 pandemic year as a separate case.
+
+## Key findings
+
+- **Parallel growth:** both rent and homelessness rose roughly 60% between 2015 and 2024.
+- **2024 highs:** average rent about $1,650/mo and 31,554 people counted as homeless, the highest in the series.
+- **2021 outlier:** homelessness fell to 11,511 despite rising rent, which lines up with COVID-19 eviction moratoriums and federal emergency rental assistance.
+- Correlation, not causation. Rent is one pressure among many; the report states this caveat directly.
+
+## Data sources
+
+- **Zillow Observed Rent Index (ZORI)** - smoothed, all homes plus multifamily (`data/zillow_rent_index_wa.csv`).
+- **HUD Point-in-Time estimates by state, 2015-2024** (`data/hud_pit_wa_2015_2024.csv`).
+
+## Repo layout
+
+- `scripts/` - R scripts for loading (`01_data_loading.R`), processing (`02_data_processing.R`), analysis (`03_analysis.R`), and visualization (`04_visualization.R`).
+- `data/` - the two source CSVs.
+- `docs/METHODOLOGY.md` - how the series were built and compared.
+- `index.html` - the published interactive report (Chart.js), served via GitHub Pages.
+- `output/` - directory for generated results.
+
+## Reproduce
+
+Install R with `dplyr`, `tidyr`, and `ggplot2`, then run the scripts in order:
+
+```r
+install.packages(c("dplyr", "tidyr", "ggplot2"))
 ```
 
-## Usage
-1. Load the data files from the `data/` directory.
-2. Run the analysis scripts located in the `scripts/` directory.
-3. Examine the plots and results in the `results/` and `figures/` directories.
+```bash
+Rscript scripts/01_data_loading.R
+Rscript scripts/02_data_processing.R
+Rscript scripts/03_analysis.R
+Rscript scripts/04_visualization.R
+```
 
-## Contributing
-Contributions to improve this analysis and project are welcome! Please open issues or submit pull requests for further enhancements.
+## Stack
 
-## Contact
-For any inquiries, please contact **Tarang Jammalamadaka** at **tarangjammalamadaka9@gmail.com**.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+R (dplyr, tidyr, ggplot2) for the analysis; HTML plus Chart.js for the published report.
